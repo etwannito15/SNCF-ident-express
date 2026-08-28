@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SNCF Identif' Express</title>
+<style>
+:root{--bg:#0b1220;--card:#121c2e;--card2:#18253b;--text:#f3f6fb;--muted:#9eabc0;--accent:#ffd400;--good:#35d07f;--bad:#ff5c70}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#08101c,#101a2c 55%,#0b1220);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+.wrap{max-width:850px;margin:auto;padding:24px 16px 50px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+.logo{font-weight:900;font-size:clamp(22px,5vw,34px);letter-spacing:-1px}.logo span{color:var(--accent)}
+.stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.pill{background:var(--card);border:1px solid #263650;padding:8px 12px;border-radius:999px;font-size:14px}
+.screen{background:rgba(18,28,46,.96);border:1px solid #263650;border-radius:24px;padding:22px;box-shadow:0 18px 50px #0005}.center{text-align:center}
+h1,h2,h3{margin-top:0}.sub{color:var(--muted);line-height:1.5}.btn{border:0;border-radius:14px;padding:13px 18px;font-size:16px;font-weight:800;cursor:pointer;background:var(--accent);color:#111;transition:.15s}.btn:hover{transform:translateY(-1px);filter:brightness(1.05)}.btn.secondary{background:var(--card2);color:var(--text);border:1px solid #31415d}.btn.danger{background:#3a1d28;color:#ffb1bc;border:1px solid #693343}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.answer{text-align:left;background:var(--card2);color:var(--text);border:1px solid #30415f;border-radius:15px;padding:15px;font-size:16px;font-weight:750;cursor:pointer}.answer:hover{border-color:#647b9e;background:#20304a}.answer.correct{border-color:var(--good);background:#123b2a}.answer.wrong{border-color:var(--bad);background:#431f29}.answer:disabled{cursor:default}
+.bar{height:10px;background:#273650;border-radius:999px;overflow:hidden}.bar>div{height:100%;background:var(--accent);width:100%;transition:width .2s}
+.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:14px;margin:8px 0}.photo{height:300px;border-radius:18px;background:#0a111d;display:flex;align-items:center;justify-content:center;overflow:hidden;margin:15px 0;border:1px solid #263650}.photo img{width:100%;height:100%;object-fit:cover}.emoji{font-size:100px}.notice{padding:14px;border-radius:14px;margin-top:14px;background:#18253b;border:1px solid #30415f}.good{color:var(--good)}.bad{color:var(--bad)}.small{font-size:13px;color:var(--muted)}.collection{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.item{background:var(--card2);border:1px solid #30415f;border-radius:15px;padding:13px}.item.lock{opacity:.45}.tag{display:inline-block;font-size:11px;padding:4px 7px;border-radius:8px;background:#263650;color:#d9e1ee;margin-top:7px}.hidden{display:none}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.photo{height:230px}.screen{padding:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="logo">🚆 SNCF <span>IDENTIF' EXPRESS</span></div>
+    <div class="stats">
+      <div class="pill">🏆 <b id="score">0</b></div>
+      <div class="pill">🔥 <b id="streak">0</b></div>
+    </div>
+  </div>
+
+  <section id="home" class="screen center">
+    <h1>Reconnais-les tous.</h1>
+    <p class="sub">Un quiz ferroviaire made in France. Identifie les matériels, gagne de l'XP et remplis ton dépôt.</p>
+    <div class="notice">🚂 <b>V1 Prototype</b><br><span class="small">20 matériels • 10 questions par partie • 4 choix • chrono • collection</span></div>
+    <div class="actions">
+      <button class="btn" onclick="startGame()">▶ Lancer une partie</button>
+      <button class="btn secondary" onclick="showCollection()">📚 Ma collection</button>
+    </div>
+  </section>
+
+  <section id="quiz" class="screen hidden">
+    <div class="meta"><span id="qnum">Question 1/10</span><span>⏱️ <b id="timer">10</b>s</span></div>
+    <div class="bar"><div id="timebar"></div></div>
+    <div class="photo" id="photo"></div>
+    <h2 id="question">Quelle est cette machine ?</h2>
+    <div id="answers" class="grid"></div>
+    <div id="feedback" class="notice hidden"></div>
+    <div class="actions"><button id="next" class="btn hidden" onclick="nextQuestion()">Question suivante →</button></div>
+  </section>
+
+  <section id="result" class="screen center hidden">
+    <h1>Fin de partie 🏁</h1>
+    <h2 id="finalScore"></h2>
+    <p id="finalText" class="sub"></p>
+    <div class="actions">
+      <button class="btn" onclick="startGame()">🔄 Rejouer</button>
+      <button class="btn secondary" onclick="showCollection()">📚 Collection</button>
+      <button class="btn secondary" onclick="goHome()">⌂ Accueil</button>
+    </div>
+  </section>
+
+  <section id="collection" class="screen hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div><h2>📚 Mon dépôt</h2><p class="sub" id="collectionCount"></p></div>
+      <button class="btn secondary" onclick="goHome()">← Retour</button>
+    </div>
+    <div id="collectionGrid" class="collection"></div>
+  </section>
+</div>
+
+<script>
+window.addEventListener("error", function(e){
+  const home=document.getElementById("home");
+  if(home && !document.getElementById("jsError")){
+    const d=document.createElement("div");
+    d.id="jsError"; d.className="notice bad";
+    d.innerHTML="<b>Erreur de démarrage</b><br><span class='small'>"+String(e.message||"Erreur JavaScript")+"</span>";
+    home.appendChild(d);
+  }
+});
+const trains = [
+{name:"BB 26000",nick:"Sybic",type:"Locomotive électrique",power:"5 600 kW",speed:"200 km/h",energy:"1,5 kV / 25 kV",emoji:"🚂",hint:"Locomotive bicourant, célèbre pour son surnom."},
+{name:"BB 7200",nick:"",type:"Locomotive électrique",power:"4 040 kW",speed:"160 km/h",energy:"1,5 kV continu",emoji:"🚂",hint:"Grande famille des locomotives électriques monocourant 1,5 kV."},
+{name:"BB 15000",nick:"",type:"Locomotive électrique",power:"5 850 kW",speed:"160 km/h",energy:"25 kV 50 Hz",emoji:"🚂",hint:"Une grande classique du courant 25 kV."},
+{name:"BB 22200",nick:"",type:"Locomotive électrique",power:"4 130 kW",speed:"160 km/h",energy:"1,5 kV / 25 kV",emoji:"🚂",hint:"Version bicourant de la famille BB 7200/BB 15000."},
+{name:"BB 27000",nick:"Prima",type:"Locomotive électrique",power:"4 200 kW",speed:"140 km/h",energy:"25 kV 50 Hz",emoji:"🚂",hint:"Locomotive Prima utilisée notamment pour le fret."},
+{name:"BB 75000",nick:"Prima",type:"Locomotive diesel",power:"2 000 kW",speed:"120 km/h",energy:"Diesel-électrique",emoji:"🚂",hint:"Une Prima diesel, notamment employée pour le fret."},
+{name:"CC 72000",nick:"",type:"Locomotive diesel",power:"2 650 kW",speed:"160 km/h",energy:"Diesel-électrique",emoji:"🚂",hint:"La célèbre grande locomotive diesel à deux bogies à trois essieux."},
+{name:"X 73500",nick:"A TER",type:"Autorail",power:"2 × 257 kW",speed:"140 km/h",energy:"Diesel",emoji:"🚌",hint:"Autorail léger monomode très répandu sur les TER."},
+{name:"X 72500",nick:"X TER",type:"Autorail",power:"2 × 588 kW",speed:"160 km/h",energy:"Diesel-électrique",emoji:"🚌",hint:"Autorail bimoteur à caisse articulée, reconnaissable à son profil."},
+{name:"B 81500",nick:"AGC",type:"Automoteur bimode",power:"≈ 1 324 kW",speed:"160 km/h",energy:"Diesel / 1,5 kV",emoji:"🚆",hint:"AGC capable de fonctionner au diesel et sous caténaire 1,5 kV."},
+{name:"B 82500",nick:"AGC",type:"Automoteur bimode bicourant",power:"≈ 1 324 kW",speed:"160 km/h",energy:"Diesel / 1,5 kV / 25 kV",emoji:"🚆",hint:"AGC bimode et bicourant."},
+{name:"Z 27500",nick:"AGC",type:"Automotrice électrique",power:"≈ 2 800 kW",speed:"160 km/h",energy:"1,5 kV / 25 kV",emoji:"🚆",hint:"Version électrique bicourant de la famille AGC."},
+{name:"Z 26500",nick:"TER 2N NG",type:"Automotrice électrique",power:"≈ 3 400 kW",speed:"160 km/h",energy:"1,5 kV / 25 kV",emoji:"🚆",hint:"Automotrice à deux niveaux, nouvelle génération."},
+{name:"TGV Duplex",nick:"",type:"Rame TGV",power:"≈ 9 280 kW",speed:"320 km/h",energy:"1,5 kV / 25 kV",emoji:"🚄",hint:"Rame TGV à deux niveaux, emblématique des relations à grande vitesse."},
+{name:"TGV Atlantique",nick:"",type:"Rame TGV",power:"≈ 8 800 kW",speed:"300 km/h",energy:"1,5 kV / 25 kV",emoji:"🚄",hint:"Première génération TGV bicourant à deux niveaux ? Non : attention, elle est à un niveau."},
+{name:"TGV Réseau",nick:"",type:"Rame TGV",power:"≈ 8 800 kW",speed:"300 km/h",energy:"1,5 kV / 25 kV",emoji:"🚄",hint:"Rame TGV de la génération Réseau, dérivée du concept Atlantique."},
+{name:"Corail",nick:"",type:"Voiture voyageurs",power:"—",speed:"200 km/h",energy:"—",emoji:"🚃",hint:"Voiture voyageurs emblématique des trains classiques français."},
+{name:"Z 5300",nick:"Petit Gris",type:"Automotrice électrique",power:"≈ 2 320 kW",speed:"140 km/h",energy:"1,5 kV continu",emoji:"🚆",hint:"Ancienne automotrice inox surnommée Petit Gris."},
+{name:"Z 5600",nick:"",type:"Automotrice électrique",power:"≈ 2 800 kW",speed:"140 km/h",energy:"1,5 kV continu",emoji:"🚆",hint:"Automotrice à deux niveaux de la famille Z 2N."},
+{name:"Z 8800",nick:"",type:"Automotrice électrique",power:"≈ 2 800 kW",speed:"140 km/h",energy:"1,5 kV / 25 kV",emoji:"🚆",hint:"Automotrice à deux niveaux bicourant de la famille Z 2N."}
+];
+
+let current=[],idx=0,score=0,streak=0,timer=null,time=10,answered=false;
+let unlocked=JSON.parse(localStorage.getItem("sncfUnlocked")||"[]");
+
+function el(id){return document.getElementById(id)}
+function show(id){["home","quiz","result","collection"].forEach(x=>el(x).classList.toggle("hidden",x!==id))}
+window.goHome=function(){clearInterval(timer);show("home")}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+window.startGame=function(){
+ clearInterval(timer); score=0;streak=0;idx=0;answered=false;
+ el("score").textContent=score;el("streak").textContent=streak;
+ current=shuffle(trains).slice(0,10);show("quiz");loadQuestion();
+}
+window.loadQuestion=function(){
+ answered=false;time=10;el("next").classList.add("hidden");el("feedback").classList.add("hidden");
+ const t=current[idx];el("qnum").textContent=`Question ${idx+1}/10`;
+ el("question").textContent="Quelle est cette machine ?";
+ el("timer").textContent=time;el("timebar").style.width="100%";
+ el("photo").innerHTML=`<div class="center"><div class="emoji">${t.emoji}</div><b>${t.type}</b><div class="small">Prototype : visuel symbolique</div></div>`;
+ let choices=shuffle([t,...shuffle(trains.filter(x=>x.name!==t.name)).slice(0,3)]);
+ el("answers").innerHTML="";
+ choices.forEach(c=>{
+   const b=document.createElement("button");b.className="answer";b.textContent=c.name;b.addEventListener("click", function(){ answer(c.name===t.name,b); }); el("answers").appendChild(b);
+ });
+ timer=setInterval(()=>{time--;el("timer").textContent=time;el("timebar").style.width=(time/10*100)+"%";if(time<=0)answer(false,null)},1000);
+}
+window.answer=function(ok,button){
+ if(answered)return;answered=true;clearInterval(timer);
+ const t=current[idx];
+ [...el("answers").children].forEach(b=>{b.disabled=true;if(b.textContent===t.name)b.classList.add("correct")});
+ if(button && !ok)button.classList.add("wrong");
+ let pts=0;
+ if(ok){pts=100+time*10;streak++;score+=pts;if(!unlocked.includes(t.name)){unlocked.push(t.name);localStorage.setItem("sncfUnlocked",JSON.stringify(unlocked))}}
+ else streak=0;
+ el("score").textContent=score;el("streak").textContent=streak;
+ const f=el("feedback");f.classList.remove("hidden");
+ f.innerHTML=ok?`<span class="good">✅ Bien joué ! +${pts} points</span>`:`<span class="bad">❌ Raté !</span>`;
+ f.innerHTML+=`<br><b>${t.name}${t.nick?" — « "+t.nick+" »":""}</b><br><span class="small">${t.type} • ${t.power} • ${t.speed} • ${t.energy}</span>`;
+ el("next").classList.remove("hidden");el("next").textContent=idx===9?"Voir le résultat →":"Question suivante →";
+}
+window.nextQuestion=function(){if(idx===9)finish();else{idx++;loadQuestion()}}
+window.finish=function(){
+ clearInterval(timer);show("result");
+ el("finalScore").textContent=`${score} points`;
+ let msg=score>=1800?"👑 Niveau Ferrovipathe !":score>=1300?"🚂 Très solide !":score>=800?"👍 Pas mal du tout !":"🔧 Il va falloir réviser les séries, frérot !";
+ el("finalText").textContent=`${msg} Tu as débloqué ${unlocked.length}/${trains.length} matériels dans ta collection.`;
+}
+window.showCollection=function(){
+ clearInterval(timer);show("collection");el("collectionCount").textContent=`${unlocked.length} / ${trains.length} matériels débloqués`;
+ el("collectionGrid").innerHTML=trains.map(t=>{
+  const u=unlocked.includes(t.name);
+  return `<div class="item ${u?"":"lock"}"><div style="font-size:30px">${u?t.emoji:"🔒"}</div><b>${u?t.name:"Matériel verrouillé"}</b>${u?`<br><span class="small">${t.nick||t.type}</span><br><span class="tag">${t.speed}</span>`:""}</div>`
+ }).join("");
+}
+</script>
+</body>
+</html>
