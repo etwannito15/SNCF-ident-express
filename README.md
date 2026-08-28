@@ -1,33 +1,19 @@
-# 🚆 SNCF Identif' Express
+# SNCF Identif' Express V3
 
-Prototype V1 d'un quiz d'identification du matériel ferroviaire français.
+V3 mobile-first avec :
+- 24 matériels SNCF
+- vraies photos Wikimedia Commons
+- mode Classique
+- mode Hardcore
+- mode Technique
+- indices
+- chrono
+- score / combo
+- collection persistante
+- crédits et licences photo
 
-## Mise en ligne avec GitHub Pages
+## GitHub Pages
+Remplace l'ancien `index.html` par celui-ci et conserve `.nojekyll`.
+Settings → Pages → Deploy from a branch → `main` → `/(root)`.
 
-1. Crée un nouveau dépôt GitHub, par exemple `sncf-identif-express`.
-2. Mets le dépôt en public si tu utilises GitHub Free.
-3. Envoie **tout le contenu de ce dossier** à la racine du dépôt.
-4. Dans le dépôt : **Settings → Pages**.
-5. Dans **Build and deployment**, choisis **Deploy from a branch**.
-6. Branche : `main` ; dossier : `/(root)` ; puis **Save**.
-7. GitHub publiera le site à une adresse du type :
-   `https://TON-PSEUDO.github.io/sncf-identif-express/`
-
-La publication peut prendre quelques minutes.
-
-## Contenu
-
-- `index.html` : le jeu complet
-- `.nojekyll` : évite le traitement Jekyll inutile pour ce site statique
-
-## V1
-
-- 20 matériels
-- 10 questions par partie
-- 4 réponses
-- chronomètre
-- score et série
-- collection sauvegardée dans le navigateur
-- interface mobile
-
-Les visuels de la V1 sont symboliques. Une V2 pourra intégrer de vraies photos, des sons et un mode expert.
+Les photos sont chargées à distance depuis Wikimedia Commons. Pour une redistribution publique, respecte les licences de chaque fichier et conserve les attributions.
