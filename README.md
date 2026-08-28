@@ -1,19 +1,15 @@
-# SNCF Identif' Express V3
+# SNCF Identif' Express V4
 
-V3 mobile-first avec :
-- 24 matériels SNCF
-- vraies photos Wikimedia Commons
-- mode Classique
-- mode Hardcore
-- mode Technique
-- indices
-- chrono
-- score / combo
-- collection persistante
-- crédits et licences photo
+V4 :
+- 50 séries/familles
+- photos résolues dynamiquement depuis Wikimedia Commons via son API
+- fallback si une catégorie n'a pas de média
+- modes Classique / Hardcore / Technique / Sonore
+- premier extrait sonore libre (CC BY 3.0) depuis Wikimedia Commons
+- chrono, indices, combo, score, collection persistante
+- interface mobile
 
-## GitHub Pages
-Remplace l'ancien `index.html` par celui-ci et conserve `.nojekyll`.
-Settings → Pages → Deploy from a branch → `main` → `/(root)`.
+## Publication GitHub Pages
+Remplacer `index.html` et `.nojekyll` dans le dépôt existant.
 
-Les photos sont chargées à distance depuis Wikimedia Commons. Pour une redistribution publique, respecte les licences de chaque fichier et conserve les attributions.
+Le mode photo utilise l'API Wikimedia Commons côté navigateur, donc une connexion Internet est nécessaire. Les crédits du son sont affichés dans le jeu.
